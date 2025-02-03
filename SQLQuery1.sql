@@ -136,6 +136,7 @@ VALUES
 
 INSERT INTO Emprestimos (ISBN, EmailUsuario, DataRetirada, DataDevolucaoPrevista) VALUES 
 ('9788582850853', 'maria.santos@email.com', '2024-01-05', '2024-01-19'),
+('9788582850853', 'maria.santos@email.com', '2024-01-05', '2024-01-19'),
 ('9786558300402', 'carlos.oliveira@email.com', '2024-01-06', '2024-01-20'),
 ('9788580419152', 'ana.lima@email.com', '2024-01-07', '2024-01-21'),
 ('9786555320388', 'fernando.martins@email.com', '2024-01-08', '2024-01-22'),
