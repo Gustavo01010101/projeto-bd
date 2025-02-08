@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Biblioteca</title>
+    <style>
+        body {
+            background-color: #f4e1c1;
+            font-family: "Courier New", Courier, monospace;
+            color: #3b2f2f;
+            text-align: center;
+        }
+        header {
+            background-color: #6b4226;
+            color: #f4e1c1;
+            padding: 20px;
+            font-size: 24px;
+        }
+        nav ul {
+            list-style: none;
+            padding: 0;
+        }
+        nav ul li {
+            display: inline;
+            margin: 0 15px;
+        }
+        nav ul li a {
+            color: #f4e1c1;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        section {
+            margin: 20px auto;
+            width: 50%;
+            padding: 20px;
+            background-color: #d9c3a3;
+            border: 3px solid #6b4226;
+            border-radius: 10px;
+            display: none; /* Oculta todas as seções inicialmente */
+        }
+        input, button, select {
+            display: block;
+            width: 80%;
+            margin: 10px auto;
+            padding: 10px;
+            font-family: "Courier New", Courier, monospace;
+        }
+        button {
+            background-color: #6b4226;
+            color: #f4e1c1;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #3b2f2f;
+        }
+        .active {
+            display: block; /* Exibe a seção ativa */
+        }
+        .relatorio {
+            margin-top: 20px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Sistema de Biblioteca</h1>
+        <nav>
+            <ul>
+                <li><a onclick="mostrarSecao('cadastro-livros')">Cadastro de Livros</a></li>
+                <li><a onclick="mostrarSecao('gerenciar-usuarios')">Gerenciar Usuários</a></li>
+                <li><a onclick="mostrarSecao('gerenciar-emprestimos')">Empréstimos</a></li>
+                <li><a onclick="mostrarSecao('relatorios')">Relatórios</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Seção de Cadastro de Livros -->
+    <section id="cadastro-livros" class="active">
+        <h2>Cadastro de Livros</h2>
+        <form id="form-cadastro-livro">
+            <input type="text" id="titulo" placeholder="Título" required>
+            <input type="text" id="autor" placeholder="Autor" required>
+            <input type="text" id="editora" placeholder="Editora" required>
+            <input type="number" id="ano" placeholder="Ano de Publicação" required>
+            <input type="text" id="genero" placeholder="Gênero" required>
+            <input type="text" id="isbn" placeholder="ISBN" required>
+            <button type="submit">Cadastrar Livro</button>
+        </form>
+        <div id="lista-livros"></div>
+    </section>
+
+    <!-- Seção de Gerenciar Usuários -->
+    <section id="gerenciar-usuarios">
+        <h2>Gerenciar Usuários</h2>
+        <form id="form-adicionar-usuario">
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="text" id="nome" placeholder="Nome" required>
+            <input type="text" id="endereco" placeholder="Endereço" required>
+            <input type="text" id="telefone" placeholder="Telefone" required>
+            <input type="text" id="categoria" placeholder="Categoria" required>
+            <button type="submit">Adicionar Usuário</button>
+        </form>
+        <div id="lista-usuarios"></div>
+    </section>
+
+    <!-- Seção de Gerenciar Empréstimos -->
+    <section id="gerenciar-emprestimos">
+        <h2>Gerenciar Empréstimos</h2>
+        <form id="form-adicionar-emprestimo">
+            <input type="text" id="isbn-emprestimo" placeholder="ISBN do Livro" required>
+            <input type="email" id="email-usuario" placeholder="Email do Usuário" required>
+            <input type="date" id="data-retirada" placeholder="Data de Retirada" required>
+            <input type="date" id="data-devolucao-prevista" placeholder="Data de Devolução Prevista" required>
+            <input type="date" id="data-devolucao-real" placeholder="Data de Devolução Real">
+            <button type="submit">Registrar Empréstimo</button>
+        </form>
+        <div id="lista-emprestimos"></div>
+    </section>
+
+    <!-- Seção de Relatórios -->
+    <section id="relatorios">
+        <h2>Relatórios</h2>
+
+        <!-- Resultados dos Relatórios -->
+        <div id="relatorio-livros-mais-emprestados" class="relatorio">
+            <h3>Livros Mais Emprestados</h3>
+            <ul id="lista-livros-mais-emprestados"></ul>
+        </div>
+        <div id="relatorio-usuarios-mais-emprestimos" class="relatorio">
+            <h3>Usuários com Mais Empréstimos</h3>
+            <ul id="lista-usuarios-mais-emprestimos"></ul>
+        </div>
+        <div id="relatorio-livros-atrasados" class="relatorio">
+            <h3>Livros Atrasados</h3>
+            <ul id="lista-livros-atrasados"></ul>
+        </div>
+    </section>
+
+    <script>
+        // Função para alternar entre as seções
+        function mostrarSecao(id) {
+            // Oculta todas as seções
+            document.querySelectorAll('section').forEach(sec => {
+                sec.classList.remove('active');
+            });
+            // Exibe a seção clicada
+            document.getElementById(id).classList.add('active');
+
+            // Se a seção de relatórios for aberta, atualiza os relatórios
+            if (id === 'relatorios') {
+                atualizarRelatorios();
+            }
+        }
+
+        // Dados fictícios para empréstimos
+        let emprestimos = [];
+
+        // Gerenciar Usuários
+        document.getElementById('form-adicionar-usuario').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const nome = document.getElementById('nome').value;
+            const endereco = document.getElementById('endereco').value;
+            const telefone = document.getElementById('telefone').value;
+            const categoria = document.getElementById('categoria').value;
+            
+            const usuario = { email, nome, endereco, telefone, categoria };
+            
+            // Exibir o usuário na lista
+            const listaUsuarios = document.getElementById('lista-usuarios');
+            const divUsuario = document.createElement('div');
+            divUsuario.textContent = `Email: ${usuario.email}, Nome: ${usuario.nome}, Endereço: ${usuario.endereco}, Telefone: ${usuario.telefone}, Categoria: ${usuario.categoria}`;
+            listaUsuarios.appendChild(divUsuario);
+            
+            // Limpar o formulário
+            document.getElementById('form-adicionar-usuario').reset();
+        });
+
+        // Gerenciar Empréstimos
+        document.getElementById('form-adicionar-emprestimo').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const isbn = document.getElementById('isbn-emprestimo').value;
+            const emailUsuario = document.getElementById('email-usuario').value;
+            const dataRetirada = document.getElementById('data-retirada').value;
+            const dataDevolucaoPrevista = document.getElementById('data-devolucao-prevista').value;
+            const dataDevolucaoReal = document.getElementById('data-devolucao-real').value;
+            
+            const emprestimo = { isbn, emailUsuario, dataRetirada, dataDevolucaoPrevista, dataDevolucaoReal };
+            emprestimos.push(emprestimo); // Adiciona o empréstimo à lista
+            
+            // Exibir o empréstimo na lista
+            const listaEmprestimos = document.getElementById('lista-emprestimos');
+            const divEmprestimo = document.createElement('div');
+            divEmprestimo.textContent = `ISBN: ${emprestimo.isbn}, Email do Usuário: ${emprestimo.emailUsuario}, Data de Retirada: ${emprestimo.dataRetirada}, Data de Devolução Prevista: ${emprestimo.dataDevolucaoPrevista}, Data de Devolução Real: ${emprestimo.dataDevolucaoReal}`;
+            listaEmprestimos.appendChild(divEmprestimo);
+            
+            // Limpar o formulário
+            document.getElementById('form-adicionar-emprestimo').reset();
+
+            // Atualiza os relatórios se a seção estiver aberta
+            if (document.getElementById('relatorios').classList.contains('active')) {
+                atualizarRelatorios();
+            }
+        });
+
+        // Função para atualizar os relatórios
+        function atualizarRelatorios() {
+            // Livros mais emprestados
+            const livrosMaisEmprestados = {};
+            emprestimos.forEach(emp => {
+                livrosMaisEmprestados[emp.isbn] = (livrosMaisEmprestados[emp.isbn] || 0) + 1;
+            });
+            const listaMaisEmprestados = Object.entries(livrosMaisEmprestados)
+                .sort((a, b) => b[1] - a[1])
+                .map(([isbn, count]) => `ISBN: ${isbn} - ${count} empréstimos`);
+            document.getElementById('lista-livros-mais-emprestados').innerHTML = listaMaisEmprestados.map(item => `<li>${item}</li>`).join('');
+
+            // Usuários com mais empréstimos
+            const usuariosMaisEmprestimos = {};
+            emprestimos.forEach(emp => {
+                usuariosMaisEmprestimos[emp.emailUsuario] = (usuariosMaisEmprestimos[emp.emailUsuario] || 0) + 1;
+            });
+            const listaUsuariosMaisEmprestimos = Object.entries(usuariosMaisEmprestimos)
+                .sort((a, b) => b[1] - a[1])
+                .map(([email, count]) => `Email: ${email} - ${count} empréstimos`);
+            document.getElementById('lista-usuarios-mais-emprestimos').innerHTML = listaUsuariosMaisEmprestimos.map(item => `<li>${item}</li>`).join('');
+
+            // Livros atrasados
+            const hoje = new Date();
+            const livrosAtrasados = emprestimos.filter(emp => {
+                const dataDevolucaoPrevista = new Date(emp.dataDevolucaoPrevista);
+                return !emp.dataDevolucaoReal && dataDevolucaoPrevista < hoje;
+            });
+            document.getElementById('lista-livros-atrasados').innerHTML = livrosAtrasados.map(emp => `<li>ISBN: ${emp.isbn}, Email do Usuário: ${emp.emailUsuario}, Data de Devolução Prevista: ${emp.dataDevolucaoPrevista}</li>`).join('');
+        }
+    </script>
+</body>
+</html>
