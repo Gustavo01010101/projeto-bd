@@ -225,8 +225,8 @@ GROUP BY EmailUsuario
 ORDER BY TotalEmprestimos DESC;
 
 
-SELECT ISBN, EmailUsuario, DataDevolucaoPrevista
+SELECT ISBN, EmailUsuario, DataDevolucaoPrevista ,DataDevolucaoReal
 FROM Emprestimos
-WHERE DataDevolucaoReal IS NULL 
+WHERE DataDevolucaoReal IS NOT NULL 
   AND DataDevolucaoPrevista < CAST(GETDATE() AS DATE)
 ORDER BY DataDevolucaoPrevista;
