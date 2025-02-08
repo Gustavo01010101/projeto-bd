@@ -213,20 +213,3 @@ INSERT INTO Emprestimos (ISBN, EmailUsuario, DataRetirada, DataDevolucaoPrevista
 ('9788532529748', 'cintia.morais@email.com', '2024-02-19', '2024-03-04', '2024-03-03'),
 ('9788576572873', 'fabio.almeida@email.com', '2024-02-20', '2024-03-05', '2024-03-04'),
 ('9786558300605', 'monica.torres@email.com', '2024-02-21', '2024-03-06', '2024-03-05');
-
-SELECT ISBN, COUNT(*) AS TotalEmprestimos
-FROM Emprestimos
-GROUP BY ISBN
-ORDER BY TotalEmprestimos DESC;
-
-SELECT EmailUsuario, COUNT(*) AS TotalEmprestimos
-FROM Emprestimos
-GROUP BY EmailUsuario
-ORDER BY TotalEmprestimos DESC;
-
-
-SELECT ISBN, EmailUsuario, DataDevolucaoPrevista ,DataDevolucaoReal
-FROM Emprestimos
-WHERE DataDevolucaoReal IS NOT NULL 
-  AND DataDevolucaoPrevista < CAST(GETDATE() AS DATE)
-ORDER BY DataDevolucaoPrevista;
